@@ -26,12 +26,12 @@
                rgb-seq)
        (mapv #(int (/ % (count rgb-seq))))))
 
-(defn place-image-on-image [img-bottom img-top x y]
-  (do (doto (.createGraphics img-bottom)
+(defn place-image-on-image [image-bottom image-top x y]
+  (do (doto (.createGraphics image-bottom)
             (.setComposite (AlphaComposite/getInstance AlphaComposite/SRC_OVER 1.0))
-            (.drawImage img-top x y nil)
+            (.drawImage image-top x y nil)
             (.dispose))
-      img-bottom))
+      image-bottom))
 
 (defn resize-image [image w h]
   (let [scaled-instance (.getScaledInstance image w h Image/SCALE_SMOOTH)
