@@ -1,7 +1,40 @@
 (ns photomosaic-generator.core
-  (:gen-class))
+  (:gen-class)
+  (:require [clojure.java.io :as io])
+  (:import (javax.imageio ImageIO)
+           (java.awt Color AlphaComposite)))
 
-(defn -main
-  "I don't do a whole lot ... yet."
-  [& args]
-  (println "Hello, World!"))
+(defn- pixel->rgb [i]
+  (let [color (Color. i)]
+    [(.getRed color)
+     (.getGreen color)
+     (.getBlue color)]))
+
+(defn- rgb-seq [image]
+  (let [coords (for [w (range (.getWidth image))
+                     h (range (.getHeight image))]
+                 [w h])]
+    (map (fn [[w h]]
+           (pixel->rgb (.getRGB image w h)))
+         coords)))
+
+(defn- avg-rgb [rgb-seq]
+  (->> (reduce (fn [sum [r g b]]
+                 (mapv + sum [r g b]))
+               [0 0 0]
+               rgb-seq)
+       (mapv #(int (/ % (count rgb-seq))))))
+
+(defn place-image-on-image [img-bottom img-top x y]
+  (do (doto (.createGraphics img-bottom)
+            (.setComposite (AlphaComposite/getInstance AlphaComposite/SRC_OVER 1.0))
+            (.drawImage img-top x y nil)
+            (.dispose))
+      img-bottom))
+
+(comment
+
+  (def img1 (ImageIO/read (io/as-file (io/resource "cells.jpg"))))
+  (def img2 (ImageIO/read (io/as-file (io/resource "dog.jpg"))))
+
+  )
