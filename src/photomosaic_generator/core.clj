@@ -36,9 +36,9 @@
 (defn resize-image [image w h]
   (let [scaled-instance (.getScaledInstance image w h Image/SCALE_SMOOTH)
         resized-image (BufferedImage. w h BufferedImage/TYPE_INT_ARGB)
-        graphics (.createGraphics resized-image)]
-    (do (.drawImage graphics scaled-instance 0 0 nil)
-        (.dispose graphics)
+        g (.createGraphics resized-image)]
+    (do (.drawImage g scaled-instance 0 0 nil)
+        (.dispose g)
         resized-image)))
 
 (comment
