@@ -41,7 +41,7 @@
         (.dispose g)
         resized-image)))
 
-(defn sub-image [image x y w h]
+(defn subimage [image x y w h]
   (.getSubimage image x y w h))
 
 (defn write-image [image filename]
