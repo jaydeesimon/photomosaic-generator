@@ -2,7 +2,8 @@
   (:gen-class)
   (:require [clojure.java.io :as io])
   (:import (javax.imageio ImageIO)
-           (java.awt Color AlphaComposite)))
+           (java.awt Color AlphaComposite Image)
+           (java.awt.image BufferedImage)))
 
 (defn- pixel->rgb [i]
   (let [color (Color. i)]
@@ -31,6 +32,14 @@
             (.drawImage img-top x y nil)
             (.dispose))
       img-bottom))
+
+(defn resize-image [image w h]
+  (let [scaled-instance (.getScaledInstance image w h Image/SCALE_SMOOTH)
+        resized-image (BufferedImage. w h BufferedImage/TYPE_INT_ARGB)
+        graphics (.createGraphics resized-image)]
+    (do (.drawImage graphics scaled-instance 0 0 nil)
+        (.dispose graphics)
+        resized-image)))
 
 (comment
 
