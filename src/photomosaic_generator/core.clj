@@ -47,6 +47,10 @@
 (defn write-image [image filename]
   (ImageIO/write image "png" (io/as-file filename)))
 
+;; TODO: If the image does not divide evenly, there will
+;; be leftover pixels not accounted for on the right and
+;; the bottom. My current thinking is to extend the last
+;; column or bottom row to absorb the remaining pixels.
 (defn block-seq [row-blocks col-blocks max-width max-height]
   (let [width (int (/ max-width row-blocks))
         height (int (/ max-height col-blocks))]
