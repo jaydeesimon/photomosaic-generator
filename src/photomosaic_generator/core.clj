@@ -64,9 +64,14 @@
            (assoc block-info :rgb (avg-rgb (rgb-seq (subimage image x y width height)))))
          (block-seq row-blocks col-blocks max-width max-height))))
 
-(defn- divisors [num]
-  (filter some? (map #(if (zero? (mod num %)) % nil) (range 1 1000))))
+;; Pulled this from
+;; http://stackoverflow.com/questions/1725505/finding-similar-colors-programatically
+(defn- rgb-distance [rgb1 rgb2]
+  (let [diff-sq2 (fn [x1 x2] (* (- x2 x1) (- x2 x1)))]
+    (reduce + (mapv diff-sq2 rgb2 rgb1))))
 
+(defn- close? [rgb1 rgb2]
+  (< (rgb-distance rgb1 rgb2) 1000))
 
 (comment
 
