@@ -47,22 +47,25 @@
 (defn write-image [image filename]
   (ImageIO/write image "png" (io/as-file filename)))
 
-(defn block-seq [num-blocks max-width max-height]
-  (let [width (int (/ max-width num-blocks))
-        height (int (/ max-height num-blocks))]
-    (for [x (take num-blocks (range 0 max-width width))
-          y (take num-blocks (range 0 max-height height))]
+(defn block-seq [row-blocks col-blocks max-width max-height]
+  (let [width (int (/ max-width row-blocks))
+        height (int (/ max-height col-blocks))]
+    (for [x (take row-blocks (range 0 max-width width))
+          y (take col-blocks (range 0 max-height height))]
       {:x      x
        :y      y
        :width  width
        :height height})))
 
-(defn- block-rgb-seq [image num-blocks]
+(defn- block-rgb-seq [image row-blocks col-blocks]
   (let [max-width (.getWidth image)
         max-height (.getHeight image)]
     (map (fn [{:keys [x y width height] :as block-info}]
            (assoc block-info :rgb (avg-rgb (rgb-seq (subimage image x y width height)))))
-         (block-seq num-blocks max-width max-height))))
+         (block-seq row-blocks col-blocks max-width max-height))))
+
+(defn- divisors [num]
+  (filter some? (map #(if (zero? (mod num %)) % nil) (range 1 1000))))
 
 
 (comment
