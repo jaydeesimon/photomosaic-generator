@@ -67,8 +67,8 @@
 ;; Pulled this from
 ;; http://stackoverflow.com/questions/1725505/finding-similar-colors-programatically
 (defn- rgb-distance [rgb1 rgb2]
-  (let [diff-sq2 (fn [x1 x2] (* (- x2 x1) (- x2 x1)))]
-    (reduce + (mapv diff-sq2 rgb2 rgb1))))
+  (let [diff-squared (fn [x1 x2] (* (- x2 x1) (- x2 x1)))]
+    (reduce + (mapv diff-squared rgb2 rgb1))))
 
 (defn- close? [rgb1 rgb2]
   (< (rgb-distance rgb1 rgb2) 1000))
