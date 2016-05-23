@@ -47,24 +47,22 @@
 (defn write-image [image filename]
   (ImageIO/write image "png" (io/as-file filename)))
 
-(defn block-seq [width height max-width max-height]
-  (for [x (range 0 max-width width)
-        y (range 0 max-height height)]
-    {:x x
-     :y y
-     :width width
-     :height height}))
+(defn block-seq [num-blocks max-width max-height]
+  (let [width (int (/ max-width num-blocks))
+        height (int (/ max-height num-blocks))]
+    (for [x (take num-blocks (range 0 max-width width))
+          y (take num-blocks (range 0 max-height height))]
+      {:x      x
+       :y      y
+       :width  width
+       :height height})))
 
-;; Doesn't work. I think because it goes outside the range of the image.
-;; (block-rgb-seq img1 4)
 (defn- block-rgb-seq [image num-blocks]
   (let [max-width (.getWidth image)
-        max-height (.getHeight image)
-        width (int (/ (.getWidth image) num-blocks))
-        height (int (/ (.getHeight image) num-blocks))]
-    (map (fn [block-info]
-           (assoc block-info :rgb (avg-rgb (rgb-seq (subimage image (:x block-info) (:y block-info) width height)))))
-         (block-seq width height max-width max-height))))
+        max-height (.getHeight image)]
+    (map (fn [{:keys [x y width height] :as block-info}]
+           (assoc block-info :rgb (avg-rgb (rgb-seq (subimage image x y width height)))))
+         (block-seq num-blocks max-width max-height))))
 
 
 (comment
