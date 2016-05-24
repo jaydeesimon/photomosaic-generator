@@ -56,17 +56,17 @@
         height (int (/ max-height col-blocks))]
     (for [x (take row-blocks (range 0 max-width width))
           y (take col-blocks (range 0 max-height height))]
-      {:x      x
-       :y      y
-       :width  width
+      {:x x
+       :y y
+       :width width
        :height height})))
 
-(defn- block-rgb-seq [image row-blocks col-blocks]
+(defn- block-rgb-seq [image rows cols]
   (let [max-width (.getWidth image)
         max-height (.getHeight image)]
     (map (fn [{:keys [x y width height] :as block-info}]
            (assoc block-info :rgb (avg-rgb (rgb-seq (subimage image x y width height)))))
-         (block-seq row-blocks col-blocks max-width max-height))))
+         (block-seq rows cols max-width max-height))))
 
 ;; Pulled this from
 ;; http://stackoverflow.com/questions/1725505/finding-similar-colors-programatically
@@ -77,9 +77,30 @@
 (defn- close? [rgb1 rgb2]
   (< (rgb-distance rgb1 rgb2) 1000))
 
+(defn- generate-color-block [width height [r g b]]
+  (let [bi (BufferedImage. width height BufferedImage/TYPE_INT_ARGB)
+        graphics (.createGraphics bi)]
+    (do (.setColor graphics (Color. r g b))
+        (.fillRect graphics 0 0 width height)
+        (.dispose graphics)
+        bi)))
+
+(defn- place-blocks [image rows cols]
+  (let [block-rgb-seq (block-rgb-seq image rows cols)]
+    (reduce (fn [image-acc {:keys [x y width height rgb]}]
+              (let [block-image (generate-color-block width height rgb)]
+                (place-image-on-image image-acc block-image x y)))
+            image
+            block-rgb-seq)))
+
 (comment
 
   (def img1 (ImageIO/read (io/as-file (io/resource "cells.jpg"))))
+
   (def img2 (ImageIO/read (io/as-file (io/resource "dog.jpg"))))
+
+  (def cat-img (ImageIO/read (io/as-file (io/resource "cat.jpg"))))
+
+  (def monkey-img (ImageIO/read (io/as-file (io/resource "monkey.jpg"))))
 
   )
