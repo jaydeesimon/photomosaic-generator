@@ -35,9 +35,9 @@
              (.dispose))
        image-bottom)))
 
-(defn resize-image [image w h]
-  (let [scaled-instance (.getScaledInstance image w h Image/SCALE_SMOOTH)
-        resized-image (BufferedImage. w h BufferedImage/TYPE_INT_ARGB)
+(defn resize-image [image width height]
+  (let [scaled-instance (.getScaledInstance image width height Image/SCALE_SMOOTH)
+        resized-image (BufferedImage. width height BufferedImage/TYPE_INT_ARGB)
         g (.createGraphics resized-image)]
     (do (.drawImage g scaled-instance 0 0 nil)
         (.dispose g)
@@ -53,11 +53,11 @@
 ;; be leftover pixels not accounted for on the right and
 ;; the bottom. My current thinking is to extend the last
 ;; column or bottom row to absorb the remaining pixels.
-(defn block-seq [row-blocks col-blocks max-width max-height]
-  (let [width (int (/ max-width row-blocks))
-        height (int (/ max-height col-blocks))]
-    (for [x (take row-blocks (range 0 max-width width))
-          y (take col-blocks (range 0 max-height height))]
+(defn block-seq [rows cols max-width max-height]
+  (let [width (int (/ max-width rows))
+        height (int (/ max-height cols))]
+    (for [x (take rows (range 0 max-width width))
+          y (take cols (range 0 max-height height))]
       {:x x
        :y y
        :width width
