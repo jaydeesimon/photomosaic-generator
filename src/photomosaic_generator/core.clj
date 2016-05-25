@@ -11,6 +11,12 @@
      (.getGreen color)
      (.getBlue color)]))
 
+(defn- copy-image [image]
+  (let [cm (.getColorModel image)
+        is-alpha-premultiplied (.isAlphaPremultiplied cm)
+        raster (.copyData image nil)]
+    (BufferedImage. cm raster is-alpha-premultiplied nil)))
+
 (defn- rgb-seq [image]
   (let [coords (for [w (range (.getWidth image))
                      h (range (.getHeight image))]
@@ -87,6 +93,12 @@
         (.dispose graphics)
         bi)))
 
+(defn- generate-colored-image-block [image [r g b]]
+  (let [width (.getWidth image)
+        height (.getHeight image)
+        color-block-image (generate-color-block width height [r g b])]
+    (place-image-on-image image color-block-image 0 0 0.5)))
+
 (defn- place-blocks [image rows cols]
   (let [block-rgb-seq (block-rgb-seq image rows cols)]
     (reduce (fn [image-acc {:keys [x y width height rgb]}]
@@ -95,7 +107,21 @@
             image
             block-rgb-seq)))
 
+(defn- place-blocks-image [image image-block rows cols]
+  (let [block-rgb-seq (block-rgb-seq image rows cols)]
+    (reduce (fn [image-acc {:keys [x y width height rgb]}]
+              (let [block-image (generate-colored-image-block (resize-image (ImageIO/read (io/as-file (io/resource "obama.jpg"))) width height) rgb)]
+                (place-image-on-image image-acc block-image x y)))
+            image
+            block-rgb-seq)))
+
 (comment
+
+  "Next Steps are to actually start choosing pictures:"
+  "1) Choose a photo to use as the mosaic"
+  "2) Need to start downloading photos that I can resize and take their"
+  "   RGB values of"
+  "3) Alternatively, do a test by combining a solid color on a photo using an opacity"
 
   (def img1 (ImageIO/read (io/as-file (io/resource "cells.jpg"))))
 
@@ -104,5 +130,9 @@
   (def cat-img (ImageIO/read (io/as-file (io/resource "cat.jpg"))))
 
   (def monkey-img (ImageIO/read (io/as-file (io/resource "monkey.jpg"))))
+
+  (def obama (ImageIO/read (io/as-file (io/resource "obama.jpg"))))
+
+  (def flowers (ImageIO/read (io/as-file (io/resource "flowers.jpg"))))
 
   )
