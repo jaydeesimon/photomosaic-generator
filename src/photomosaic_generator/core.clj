@@ -11,11 +11,26 @@
      (.getGreen color)
      (.getBlue color)]))
 
-(defn- copy-image [image]
+#_(defn- copy-image [image]
   (let [cm (.getColorModel image)
         is-alpha-premultiplied (.isAlphaPremultiplied cm)
-        raster (.copyData image nil)]
-    (BufferedImage. cm raster is-alpha-premultiplied nil)))
+        raster (.copyData image nil)
+        properties (doto (Hashtable.) (.put "type" BufferedImage/TYPE_INT_ARGB))]
+    (BufferedImage. cm raster is-alpha-premultiplied properties)))
+
+(defn- copy-image [image]
+  (let [bi (BufferedImage. (.getWidth image) (.getHeight image) BufferedImage/TYPE_INT_ARGB)
+        g (.createGraphics bi)]
+    (do (.drawImage g image 0 0 nil)
+        (.dispose g)
+        bi)))
+
+(defn- black-and-white [image]
+  (let [bwi (BufferedImage. (.getWidth image) (.getHeight image) BufferedImage/TYPE_BYTE_GRAY)
+        g (.createGraphics bwi)]
+    (do (.drawImage g image 0 0 nil)
+        (.dispose g)
+        bwi)))
 
 (defn- rgb-seq [image]
   (let [coords (for [w (range (.getWidth image))
@@ -107,10 +122,15 @@
             image
             block-rgb-seq)))
 
-(defn- place-blocks-image [image image-block rows cols]
-  (let [block-rgb-seq (block-rgb-seq image rows cols)]
+(defn- prepare-image-blocks [images]
+  (map (comp copy-image black-and-white copy-image) images))
+
+(defn- place-blocks-image [image image-blocks rows cols]
+  (let [block-rgb-seq (block-rgb-seq image rows cols)
+        image-blocks (prepare-image-blocks image-blocks)]
     (reduce (fn [image-acc {:keys [x y width height rgb]}]
-              (let [block-image (generate-colored-image-block (resize-image (ImageIO/read (io/as-file (io/resource "obama.jpg"))) width height) rgb)]
+              (let [image-to-use (first (shuffle image-blocks))
+                    block-image (generate-colored-image-block (resize-image image-to-use width height) rgb)]
                 (place-image-on-image image-acc block-image x y)))
             image
             block-rgb-seq)))
