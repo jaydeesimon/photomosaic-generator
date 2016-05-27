@@ -11,19 +11,19 @@
      (.getGreen color)
      (.getBlue color)]))
 
-#_(with-graphics2d bufferedimage
-                 (do (.drawImage image 0 0 nil)
-                     (.setComposite)))
-
 (defn- insert [coll n x]
   (let [[low high] (split-at n coll)]
     (concat low [x] high)))
 
 (defmacro with-graphics2d [image & body]
   (let [g (gensym "g2d")]
-    `(let [~g (.createGraphics image)]
-       (do ~@(map #(insert % 1 g) body)
-           (.dispose ~g)))))
+    `(let [~g (.createGraphics ~image)]
+       (try
+         (do
+           ~@(map #(insert % 1 g) body)
+           ~image)
+         (finally
+           (.dispose ~g))))))
 
 (defn- copy-image [image]
   (let [bi (BufferedImage. (.getWidth image) (.getHeight image) BufferedImage/TYPE_INT_ARGB)
@@ -114,6 +114,12 @@
         (.fillRect graphics 0 0 width height)
         (.dispose graphics)
         bi)))
+
+(defn- generate-color-block [width height [r g b]]
+  (let [bi (BufferedImage. width height BufferedImage/TYPE_INT_ARGB)]
+    (with-graphics2d bi
+      (.setColor (Color. r g b))
+      (.fillRect 0 0 width height))))
 
 (defn- generate-colored-image-block [image [r g b]]
   (let [width (.getWidth image)
