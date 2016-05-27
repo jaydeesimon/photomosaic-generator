@@ -11,13 +11,6 @@
      (.getGreen color)
      (.getBlue color)]))
 
-#_(defn- copy-image [image]
-  (let [cm (.getColorModel image)
-        is-alpha-premultiplied (.isAlphaPremultiplied cm)
-        raster (.copyData image nil)
-        properties (doto (Hashtable.) (.put "type" BufferedImage/TYPE_INT_ARGB))]
-    (BufferedImage. cm raster is-alpha-premultiplied properties)))
-
 (defn- copy-image [image]
   (let [bi (BufferedImage. (.getWidth image) (.getHeight image) BufferedImage/TYPE_INT_ARGB)
         g (.createGraphics bi)]
