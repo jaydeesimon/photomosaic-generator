@@ -25,7 +25,7 @@
          (finally
            (.dispose ~g))))))
 
-(defn- copy-image [image]
+(defn- clone-image [image]
   (let [bi (BufferedImage. (.getWidth image) (.getHeight image) BufferedImage/TYPE_INT_ARGB)
         g (.createGraphics bi)]
     (do (.drawImage g image 0 0 nil)
@@ -136,7 +136,7 @@
             block-rgb-seq)))
 
 (defn- prepare-image-blocks [images]
-  (map (comp copy-image black-and-white copy-image) images))
+  (map (comp clone-image black-and-white clone-image) images))
 
 (defn- place-blocks-image [image image-blocks rows cols]
   (let [block-rgb-seq (block-rgb-seq image rows cols)
