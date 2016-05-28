@@ -4,12 +4,13 @@
            (java.awt Color AlphaComposite Image)
            (java.awt.image BufferedImage)))
 
-(def img1 (ImageIO/read (io/as-file (io/resource "cells.jpg"))))
+(comment
+  (def img1 (ImageIO/read (io/as-file (io/resource "cells.jpg"))))
 
-(def img2 (ImageIO/read (io/as-file (io/resource "dog.jpg"))))
+  (def img2 (ImageIO/read (io/as-file (io/resource "dog.jpg")))))
 
 (def image-types {:rgb BufferedImage/TYPE_INT_ARGB
-                  :gray-scale BufferedImage/TYPE_BYTE_GRAY})
+                  :grayscale BufferedImage/TYPE_BYTE_GRAY})
 
 (defn- insert [coll n x]
   (let [[low high] (split-at n coll)]
@@ -61,10 +62,10 @@
 
 (defn gray-scale [image]
   (-> image
-      (clone (:gray-scale image-types))
+      (clone (:grayscale image-types))
       (clone (:rgb image-types))))
 
-(defn subimage [image [width height] x y]
+(defn tile [image [width height] x y]
   (.getSubimage image x y width height))
 
 (defn write-png [image filename]
@@ -72,4 +73,30 @@
 
 (defn read-image [filename]
   (ImageIO/read (io/as-file filename)))
+
+(defn- pixel->rgb [i]
+  (let [color (Color. i)]
+    [(.getRed color)
+     (.getGreen color)
+     (.getBlue color)]))
+
+(defn- pixels [image]
+  (let [[width height] (dims image)
+        coords (for [w (range width) h (range height)] [w h])]
+    (map (fn [[w h]] (.getRGB image w h)) coords)))
+
+(defn- rgb-seq [image]
+  (map pixel->rgb (pixels image)))
+
+(defn- average [vectors]
+  (let [zero-vec (apply vector (repeat (count (first vectors)) 0))]
+    (->> (reduce (fn [sum vector]
+                   (mapv + sum vector))
+                 zero-vec
+                 vectors)
+         (mapv #(int (/ % (count vectors)))))))
+
+(defn average-rgb [image]
+  (average (rgb-seq image)))
+
 
