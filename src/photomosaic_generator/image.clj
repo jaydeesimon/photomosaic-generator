@@ -25,9 +25,9 @@
          (finally
            (.dispose ~g))))))
 
-(defn- dimensions [image]
-  (let [dimensions-fn (juxt #(.getWidth %) #(.getHeight %))]
-    (dimensions-fn image)))
+(defn- dims [image]
+  (let [dims-fn (juxt #(.getWidth %) #(.getHeight %))]
+    (dims-fn image)))
 
 (defn- buffered-image
   ([[width height]] (buffered-image [width height] BufferedImage/TYPE_INT_ARGB))
@@ -36,22 +36,23 @@
 
 (defn clone
   ([image] (clone image BufferedImage/TYPE_INT_ARGB))
-  ([image type] (g2d-> (buffered-image (dimensions image) type)
+  ([image type] (g2d-> (buffered-image (dims image) type)
                        (.drawImage image 0 0 nil))))
 
-(defn resize [image width height]
+(defn resize [image [width height]]
   (let [scaled-instance (.getScaledInstance image width height Image/SCALE_SMOOTH)]
     (g2d-> (buffered-image [width height])
            (.drawImage scaled-instance 0 0 nil))))
 
 (defn place
+  ([image-bottom image-top opacity] (place image-bottom image-top 0 0 opacity))
   ([image-bottom image-top x y] (place image-bottom image-top x y 1.0))
   ([image-bottom image-top x y opacity]
    (g2d-> (clone image-bottom)
           (.setComposite (AlphaComposite/getInstance AlphaComposite/SRC_OVER opacity))
           (.drawImage image-top x y nil))))
 
-(defn color-block [width height [r g b]]
+(defn color-block [[width height] [r g b]]
   (g2d-> (buffered-image [width height])
          (.setColor (Color. r g b))
          (.fillRect 0 0 width height)))
@@ -61,5 +62,5 @@
       (clone BufferedImage/TYPE_BYTE_GRAY)
       (clone BufferedImage/TYPE_INT_ARGB)))
 
-(defn subimage [image width height x y]
+(defn subimage [image [width height] x y]
   (.getSubimage image x y width height))
