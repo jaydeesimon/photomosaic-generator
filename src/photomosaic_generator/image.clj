@@ -38,7 +38,7 @@
    (BufferedImage. width height type)))
 
 (defn clone
-  ([image] (clone image BufferedImage/TYPE_INT_ARGB))
+  ([image] (clone image (:rgb image-types)))
   ([image type] (g2d-> (buffered-image (dims image) type)
                        (.drawImage image 0 0 nil))))
 
