@@ -48,9 +48,8 @@
            (.drawImage scaled-instance 0 0 nil))))
 
 (defn stack
-  ([^BufferedImage bottom ^BufferedImage top opacity] (stack bottom top 0 0 opacity))
-  ([^BufferedImage bottom ^BufferedImage top x y] (stack bottom top x y 1.0))
-  ([^BufferedImage bottom ^BufferedImage top x y opacity]
+  ([^BufferedImage bottom ^BufferedImage top opacity] (stack bottom top [0 0] opacity))
+  ([^BufferedImage bottom ^BufferedImage top [x y] opacity]
    (g2d-> (clone bottom)
           (.setComposite (AlphaComposite/getInstance AlphaComposite/SRC_OVER opacity))
           (.drawImage top x y nil))))
@@ -65,7 +64,7 @@
       (clone (:grayscale image-types))
       (clone (:rgb image-types))))
 
-(defn tile [image [width height] x y]
+(defn tile [image [x y] [width height]]
   (.getSubimage image x y width height))
 
 (defn write-png [image filename]
