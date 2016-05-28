@@ -1,6 +1,5 @@
 (ns photomosaic-generator.image
-  (:require [clojure.java.io :as io]
-            [photomosaic-generator.core :refer [write-image]])
+  (:require [clojure.java.io :as io])
   (:import (javax.imageio ImageIO)
            (java.awt Color AlphaComposite Image)
            (java.awt.image BufferedImage)))
@@ -8,6 +7,9 @@
 (def img1 (ImageIO/read (io/as-file (io/resource "cells.jpg"))))
 
 (def img2 (ImageIO/read (io/as-file (io/resource "dog.jpg"))))
+
+(def image-types {:rgb BufferedImage/TYPE_INT_ARGB
+                  :gray-scale BufferedImage/TYPE_BYTE_GRAY})
 
 (defn- insert [coll n x]
   (let [[low high] (split-at n coll)]
@@ -25,12 +27,12 @@
          (finally
            (.dispose ~g))))))
 
-(defn- dims [image]
+(defn dims [image]
   (let [dims-fn (juxt #(.getWidth %) #(.getHeight %))]
     (dims-fn image)))
 
-(defn- buffered-image
-  ([[width height]] (buffered-image [width height] BufferedImage/TYPE_INT_ARGB))
+(defn buffered-image
+  ([[width height]] (buffered-image [width height] (:rgb image-types)))
   ([[width height] type]
    (BufferedImage. width height type)))
 
@@ -44,23 +46,30 @@
     (g2d-> (buffered-image [width height])
            (.drawImage scaled-instance 0 0 nil))))
 
-(defn place
-  ([image-bottom image-top opacity] (place image-bottom image-top 0 0 opacity))
-  ([image-bottom image-top x y] (place image-bottom image-top x y 1.0))
-  ([image-bottom image-top x y opacity]
-   (g2d-> (clone image-bottom)
+(defn stack
+  ([^BufferedImage bottom ^BufferedImage top opacity] (stack bottom top 0 0 opacity))
+  ([^BufferedImage bottom ^BufferedImage top x y] (stack bottom top x y 1.0))
+  ([^BufferedImage bottom ^BufferedImage top x y opacity]
+   (g2d-> (clone bottom)
           (.setComposite (AlphaComposite/getInstance AlphaComposite/SRC_OVER opacity))
-          (.drawImage image-top x y nil))))
+          (.drawImage top x y nil))))
 
 (defn color-block [[width height] [r g b]]
   (g2d-> (buffered-image [width height])
          (.setColor (Color. r g b))
          (.fillRect 0 0 width height)))
 
-(defn- gray-scale [image]
+(defn gray-scale [image]
   (-> image
-      (clone BufferedImage/TYPE_BYTE_GRAY)
-      (clone BufferedImage/TYPE_INT_ARGB)))
+      (clone (:gray-scale image-types))
+      (clone (:rgb image-types))))
 
 (defn subimage [image [width height] x y]
   (.getSubimage image x y width height))
+
+(defn write-png [image filename]
+  (ImageIO/write image "png" (io/as-file filename)))
+
+(defn read-image [filename]
+  (ImageIO/read (io/as-file filename)))
+
