@@ -3,7 +3,6 @@
   (:require [photomosaic-generator.image :as img]
             [clojure.string :as str]))
 
-
 (defn tile-info [rows cols [width height]]
   (let [w (int (/ width rows))
         h (int (/ height cols))]
