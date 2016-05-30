@@ -10,7 +10,7 @@ Below is what I got so far. This is only using one photo superimposed on a pictu
 
 Here's the finished product. It's 14MB, just to warn you.
 
-[![](http://jaydeesimon.github.io/mosaics/good_dinosaur_small.png)](http://jaydeesimon.github.io/mosaics/good_dinosaur.png)
+[![](http://jaydeesimon.github.io/mosaics/good_dinosaur_small.png)]()
 
 I cheated a little bit by laying the tiles on top of the bottom of image with an opacity of 0.5. I didn't know what to expect but it looks pretty cool. Here's the example usage that produces a BufferedImage of the photomosaic. The process took about 5 minutes on my machine but I'm sure there are plenty of opportunities to optimize it.
 
