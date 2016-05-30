@@ -21,3 +21,11 @@ I cheated a little bit by laying the tiles on top of the bottom of image with an
         (io/file "/directory/with/tile/images")
         30 40 0.5)
 ```
+
+For comparison, here's the same process done with an opacity of 0.8.
+
+![](http://jaydeesimon.github.io/mosaics/good_dinosaur_point8_small.png)
+
+[Original](http://jaydeesimon.github.io/mosaics/good_dinosaur_point8.png)
+
+If you don't have a large sample size of images to use as tiles, it can become difficult to match based on just the average color of the tile.
