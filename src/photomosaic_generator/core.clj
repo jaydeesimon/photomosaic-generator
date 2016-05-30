@@ -44,7 +44,7 @@
 (defn close? [rgb1 rgb2]
   (< (rgb-distance rgb1 rgb2) 9000))
 
-(defn image-closet-to-color [image-index [r g b]]
+(defn image-close-to-color [image-index [r g b]]
   (:image (first (shuffle (filter (fn [{:keys [rgb]}] (close? rgb [r g b])) image-index)))))
 
 (defn mosaic [image image-dir rows cols opacity]
@@ -53,7 +53,7 @@
         image-index (index-image-directory image-dir)]
     (reduce (fn [bottom-acc {:keys [coords dims]}]
               (let [avg-rgb (img/average-rgb (img/tile bottom-acc coords dims))
-                    image-tile (image-closet-to-color image-index avg-rgb)]
+                    image-tile (image-close-to-color image-index avg-rgb)]
                 (if image-tile
                   (img/stack bottom-acc (img/resize (img/read-image image-tile) dims) coords opacity)
                   bottom-acc)))
