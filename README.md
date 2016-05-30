@@ -14,7 +14,7 @@ Here's a preview of the finished product.
 
 The original can be downloaded [here](http://jaydeesimon.github.io/mosaics/good_dinosaur.png) (it's 14 MB).
 
-I cheated a little bit by laying the tiles on top of the bottom of image with an opacity of 0.5. I didn't know what to expect but it looks pretty cool. Here's the example usage that produces a BufferedImage of the photomosaic. The process took about 5 minutes on my machine but I'm sure there are plenty of opportunities to optimize it.
+I cheated a little bit by laying the tiles on top of the bottom of image with an opacity of 0.5. I didn't know what to expect but it looks pretty cool. Here's the example usage that produces a BufferedImage of the photomosaic. The process took about 5 minutes on my machine but I'm sure there are plenty of opportunities to optimize it. The most obvious is that I'm resizing the tiles every time I use it.
 
 ```
 (mosaic (img/read-image (io/resource "good_dinosaur_bottom.jpg"))
