@@ -6,7 +6,7 @@ Below is what I got so far. This is only using one photo superimposed on a pictu
 
 ![](http://jaydeesimon.github.io/mosaics/first_mosaic.png)
 
-**Update May 29:** Whoa, it worked! I was having trouble finding enough photos to use as tiles but then I realized I could modify my movgrab project to extract the frames from a movie. I happened to have The Good Dinosaur on my laptop (don't ask) so I used that as a first test. I used [this movie poster](http://image.tmdb.org/t/p/original/c6sS6IJBDDIK1dh7HmyCWIpa5ei.jpg) as the bottom.
+**Update May 29:** Whoa, it worked! I was having trouble finding enough photos to use as tiles but then I realized I could modify my movgrab project to extract the frames from a movie. I happened to have The Good Dinosaur on my laptop so I used that as a first test. I used [this movie poster](http://image.tmdb.org/t/p/original/c6sS6IJBDDIK1dh7HmyCWIpa5ei.jpg) as the bottom.
 
 Here's the finished product. It's 14MB, just to warn you.
 
